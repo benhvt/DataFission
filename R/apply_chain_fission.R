@@ -34,7 +34,7 @@
 #' X <- cbind(X1,X2)
 #' plot(X, col = rep(1:2, each = 100))
 #' apply_chain_fission(X, nFission = 10, cl_fun = cl_fun, k=2,  k1=1, k2=2, test = t.test)
-#' apply_fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test = t.test)
+#' fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test = t.test)
 
 apply_chain_fission <- function(X,
                                 Sigma = NULL,
@@ -58,30 +58,30 @@ apply_chain_fission <- function(X,
 
   if (parallel){
     multi_fission <- pbapply::pblapply(1:nFission, function(x){
-      fission <- apply_fission(X,
-                               Sigma = Sigma,
-                               tau = tau,
-                               cl_fun = cl_fun,
-                               k = k,
-                               k1 = k1,
-                               k2 = k2,
-                               test = test,
-                               ...)
+      fission <- fission(X,
+                         Sigma = Sigma,
+                         tau = tau,
+                         cl_fun = cl_fun,
+                         k = k,
+                         k1 = k1,
+                         k2 = k2,
+                         test = test,
+                         ...)
       return(fission)
     }, cl = ncores)
   }
 
   if (!parallel){
     multi_fission <- lapply(1:nFission, function(x){
-      fission <- apply_fission(X,
-                               Sigma = Sigma,
-                               tau = tau,
-                               cl_fun = cl_fun,
-                               k = k,
-                               k1 = k1,
-                               k2 = k2,
-                               test = test,
-                               ...)
+      fission <- fission(X,
+                         Sigma = Sigma,
+                         tau = tau,
+                         cl_fun = cl_fun,
+                         k = k,
+                         k1 = k1,
+                         k2 = k2,
+                         test = test,
+                         ...)
       return(fission)
     })
   }

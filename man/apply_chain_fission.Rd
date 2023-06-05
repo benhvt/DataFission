@@ -68,5 +68,5 @@ X2 <- matrix(rnorm(200*50), ncol = 50)
 X <- cbind(X1,X2)
 plot(X, col = rep(1:2, each = 100))
 apply_chain_fission(X, nFission = 10, cl_fun = cl_fun, k=2,  k1=1, k2=2, test = t.test)
-apply_fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test = t.test)
+fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test = t.test)
 }

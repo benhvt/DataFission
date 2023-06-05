@@ -30,9 +30,9 @@
 #'plot(fission$fX, col = cl)
 #'plot(fission$gX, col = cl)
 #'dev.off()
-#'pval <- apply_fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test=t.test)
+#'pval <- fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test=t.test)
 
-apply_fission <- function(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test,...){
+fission <- function(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test,...){
   fission <- data_fission(X, Sigma, tau)
   cl <- cl_fun(fission$fX, K = k)
   p.value <- apply(fission$gX, 2, function(x){test(x=x[cl==k1], y=x[cl==k2])$p.value})
