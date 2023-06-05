@@ -13,7 +13,7 @@ fission(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test, ...)
 
 \item{tau}{The tuning parameter used of data fission}
 
-\item{cl_fun}{The clustering function that will applied on f(X)}
+\item{cl_fun}{A clustering function that returns a factor vector containing the clusters}
 
 \item{k}{The number of clusters built using cl_fun}
 
@@ -21,7 +21,7 @@ fission(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test, ...)
 
 \item{k2}{The second cluster of interest among the k}
 
-\item{test}{The statistical test to use for inference}
+\item{test}{A test function that input a numeric matrix and a partition and that outputs p-values}
 
 \item{...}{further arguments that could be parsed in test}
 }
@@ -36,7 +36,7 @@ Post Clustering inference with Data Fission
 }
 \examples{
 X <- matrix(rnorm(200), ncol = 2)
-fission <- data_fission(X, tau = 0.4)
+fiss <- data_fission(X, tau = 0.4)
 cl_fun <- function(x, K){
   km <- kmeans(x, center  = K)
   return(km$cluster)
@@ -44,8 +44,8 @@ cl_fun <- function(x, K){
 par(mfrow = c(1,3))
 plot(X)
 cl <- cl_fun(X, K=2)
-plot(fission$fX, col = cl)
-plot(fission$gX, col = cl)
+plot(fiss$fX, col = cl)
+plot(fiss$gX, col = cl)
 dev.off()
-pval <- fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test=t.test)
+pval <- fission(X, tau = 0.4, cl_fun = cl_fun, k=2, k1=1, k2=2, test=t_test.fission)
 }
