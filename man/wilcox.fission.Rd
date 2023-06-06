@@ -4,16 +4,12 @@
 \alias{wilcox.fission}
 \title{Perform Wilcoxon rank-sum tests on columns of a matrix or data frame.}
 \usage{
-wilcox.fission(X, cl, k1, k2, ...)
+wilcox.fission(X, cl, ...)
 }
 \arguments{
 \item{X}{A matrix of size n x p containing the data.}
 
 \item{cl}{A vector of length n specifying the class labels for each observation in X.}
-
-\item{k1}{The first class label for the Wilcoxon rank-sum test.}
-
-\item{k2}{The second class label for the Wilcoxon rank-sum test.}
 
 \item{...}{Additional arguments to be passed to the \code{wilcox.test} function.}
 }
@@ -30,7 +26,7 @@ X <- matrix(rnorm(100), nrow = 10)
 cl <- c(rep(1, 5), rep(2, 5))
 
 # Perform Wilcoxon rank-sum test using wilcox.fission
-p_values <- wilcox.fission(X, cl, 1, 2)
+p_values <- wilcox.fission(X, cl)
 
 # Display the results
 p_values

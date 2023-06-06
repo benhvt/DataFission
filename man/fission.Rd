@@ -4,7 +4,7 @@
 \alias{fission}
 \title{Perform post-clustering inference with data fission}
 \usage{
-fission(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test, ...)
+fission(X, Sigma = NULL, tau = 0.4, cl_fun, test, ...)
 }
 \arguments{
 \item{X}{The data matrix of size n x p where post-clustering inference must be applied}
@@ -15,12 +15,6 @@ fission(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test, ...)
 
 \item{cl_fun}{A clustering function that returns a factor vector containing the clusters}
 
-\item{k}{The number of clusters built using cl_fun}
-
-\item{k1}{The first cluster of interest among the k}
-
-\item{k2}{The second cluster of interest among the k}
-
 \item{test}{A test function that inputs a numeric matrix, a partition, and the two clusters to test, and outputs p-values}
 
 \item{...}{Additional arguments that can be passed to the test function}
@@ -28,7 +22,7 @@ fission(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test, ...)
 \value{
 A list with the following elements:
 \itemize{
-  \item \code{Cluster}: The estimated partition using cl_fun on f(X)
+  \item \code{Cluster}: The estimated 2-clusters partition using \code{cl_fun} on f(X)
   \item \code{p.value}: The p-values computed on g(X) using labels estimated on f(X)
 }
 }

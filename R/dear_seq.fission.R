@@ -22,9 +22,10 @@
 #' For more information on the dear_seq function, refer to its documentation: ?dear_seq
 #'
 #' @export
-dear_seq.fission <- function(X, cl, k1=NULL, k2=NULL, ...) {
+dear_seq.fission <- function(X, cl, ...) {
   dear_res <- dear_seq(exprmat = t(X),
                        variables2test = as.matrix(as.numeric(cl), ncol = 1),
                        ...)
+
   return(dear_res$pvals$rawPval)
 }

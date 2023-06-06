@@ -6,9 +6,6 @@
 #' @param nFission The number of repeated data fissions to perform
 #' @param merge_function The merging function used to derive chain fission p-values. It can be one of "KS", "Fisher", "geometric", or "harmonic"
 #' @param cl_fun A clustering function that returns a factor vector containing the clusters
-#' @param k The number of clusters to be built using cl_fun
-#' @param k1 The first cluster of interest among the k
-#' @param k2 The second cluster of interest among the k
 #' @param parallel A logical flag indicating whether parallel computation should be enabled
 #' @param ncores An integer indicating the number of cores to be used when parallel is TRUE
 #' @param test A test function that inputs a numeric matrix, a partition and the two clusters to test and that outputs p-values
@@ -16,7 +13,7 @@
 #'
 #' @return A list with the following elements:
 #' \itemize{
-#'   \item \code{Cluster}: The nFission estimated partitions
+#'   \item \code{Cluster}: The nFission estimated 2-clusters partitions
 #'   \item \code{p.value}: A numeric vector of length p containing the nFission merging p-values or a list of M numeric vectors of length p if more than one merging method is used
 #' }
 #'
@@ -32,8 +29,8 @@
 #' X2 <- matrix(rnorm(200 * 50), ncol = 50)
 #' X <- cbind(X1, X2)
 #' plot(X, col = rep(1:2, each = 100))
-#' chain_fission(X, nFission = 10, cl_fun = cl_fun, k = 2, k1 = 1, k2 = 2, test = t_test.fission)
-#' fission(X, tau = 0.4, cl_fun = cl_fun, k = 2, k1 = 1, k2 = 2, test = t_test.fission)
+#' chain_fission(X, nFission = 10, cl_fun = cl_fun, test = t_test.fission)
+#' fission(X, tau = 0.4, cl_fun = cl_fun, test = t_test.fission)
 #'
 #' @import pbapply
 #' @importFrom stats cov
@@ -49,9 +46,6 @@ chain_fission <- function(X,
                                                    "geometric",
                                                    "harmonic"),
                           cl_fun,
-                          k,
-                          k1,
-                          k2,
                           parallel = FALSE,
                           ncores = NULL,
                           test,
@@ -66,9 +60,6 @@ chain_fission <- function(X,
                          Sigma = Sigma,
                          tau = tau,
                          cl_fun = cl_fun,
-                         k = k,
-                         k1 = k1,
-                         k2 = k2,
                          test = test,
                          ...)
       return(fission)
@@ -81,9 +72,6 @@ chain_fission <- function(X,
                          Sigma = Sigma,
                          tau = tau,
                          cl_fun = cl_fun,
-                         k = k,
-                         k1 = k1,
-                         k2 = k2,
                          test = test,
                          ...)
       return(fission)
