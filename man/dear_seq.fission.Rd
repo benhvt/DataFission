@@ -4,7 +4,7 @@
 \alias{dear_seq.fission}
 \title{Perform Differential Expression Analysis usgin dearseq.}
 \usage{
-dear_seq.fission(X, cl, ...)
+dear_seq.fission(X, cl, k1 = NULL, k2 = NULL, ...)
 }
 \arguments{
 \item{X}{A matrix of size n x p containing the expression data.}
