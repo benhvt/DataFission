@@ -8,5 +8,5 @@ Description: DataFission is a package to conduct valid post-clustering inference
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: mvtnorm, sistmr, dearseq, pbapply
+Imports: mvtnorm, dearseq, pbapply
 RoxygenNote: 7.2.3
