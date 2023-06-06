@@ -21,7 +21,7 @@ fission(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test, ...)
 
 \item{k2}{The second cluster of interest among the k}
 
-\item{test}{A test function that input a numeric matrix and a partition and that outputs p-values}
+\item{test}{A test function that inputs a numeric matrix, a partition and the two clusters to test and that outputs p-values}
 
 \item{...}{further arguments that could be parsed in test}
 }

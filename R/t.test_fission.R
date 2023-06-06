@@ -26,7 +26,7 @@
 #' @export
 t_test.fission <- function(X, cl, k1, k2, ...) {
   ttest_res <- apply(X, 2, function(x) {
-    stats::t.test(x[cl == k1], x[cl == k2], ...)
+    stats::t.test(x[cl == k1], x[cl == k2], ...)$p.value
   })
-  return(ttest_res$p.value)
+  return(ttest_res)
 }

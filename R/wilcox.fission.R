@@ -26,7 +26,7 @@
 #' @export
 wilcox.fission <- function(X, cl, k1, k2, ...) {
   wilcox_res <- apply(X, 2, function(x) {
-    stats::wilcox.test(x[cl == k1], x[cl == k2], ...)
+    stats::wilcox.test(x[cl == k1], x[cl == k2], ...)$p.value
   })
-  return(wilcox_res$p.value)
+  return(wilcox_res)
 }

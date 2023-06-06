@@ -26,7 +26,7 @@ X <- matrix(rnorm(100), nrow = 10)
 cl <- c(rep(1, 5), rep(2, 5))
 
 # Perform DEAR-Seq analysis using dear_seq.fission
-p_values <- dear_seq.fission(X, cl, preprocessed = T)
+p_values <- dear_seq.fission(X, cl, preprocessed = TRUE, parallel_comp = FALSE)
 
 # Display the results
 p_values

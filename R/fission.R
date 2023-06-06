@@ -7,7 +7,7 @@
 #' @param k The number of clusters built using cl_fun
 #' @param k1 The first cluster of interest among the k
 #' @param k2 The second cluster of interest among the k
-#' @param test A test function that input a numeric matrix and a partition and that outputs p-values
+#' @param test A test function that inputs a numeric matrix, a partition and the two clusters to test and that outputs p-values
 #' @param ... further arguments that could be parsed in test
 #'
 #' @return
@@ -35,7 +35,7 @@
 fission <- function(X, Sigma = NULL, tau = 0.4, cl_fun, k, k1, k2, test,...){
   fiss <- data_fission(X, Sigma, tau)
   cl <- cl_fun(fiss$fX, K = k)
-  mytest <- test(fiss$gX, cl, k1, k2, ...)
-  return(list(Cluster = cl, test.results = mytest))
+  p.value <- test(fiss$gX, cl, k1, k2, ...)
+  return(list(Cluster = cl, p.value = p.value))
 }
 
