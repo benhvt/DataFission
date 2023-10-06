@@ -4,7 +4,7 @@
 #' @param cl A vector of length n specifying the class labels for each observation in X.
 #' @param ... Additional arguments to be passed to the \code{t.test} function.
 #'
-#' @return A numeric vector of length p containing the p-values obtained from the t-tests.
+#' @return A dataframe containing p-values for the t-test between each clusters pairs for each variables
 #'
 #' @examples
 #' # Generate example data
@@ -23,8 +23,24 @@
 #'
 #' @export
 t_test.fission <- function(X, cl, ...) {
+  if(!is.factor(cl)){
+    cl <- as.factor(cl)
+  }
+
+  K <- length(levels(cl))
+
+  # browser()
+
   ttest_res <- apply(X, 2, function(x) {
-    stats::t.test(x~cl, ...)$p.value
+    t_test_multiclusters(x = x, cl = cl, ...)
   })
-  return(ttest_res)
+  results <- do.call("rbind.data.frame", ttest_res)
+  if (is.null(colnames(X))){
+    results$Variable <-  rep(paste0("X", 1:ncol(X)), each = choose(K, 2))
+  }
+  else{
+    results$Variable <- rep(colnames(X), each = choose(K, 2))
+  }
+
+  return(results)
 }

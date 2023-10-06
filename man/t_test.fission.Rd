@@ -14,7 +14,7 @@ t_test.fission(X, cl, ...)
 \item{...}{Additional arguments to be passed to the \code{t.test} function.}
 }
 \value{
-A numeric vector of length p containing the p-values obtained from the t-tests.
+A dataframe containing p-values for the t-test between each clusters pairs for each variables
 }
 \description{
 Perform independent two-sample t-tests on columns of a matrix or data frame.
