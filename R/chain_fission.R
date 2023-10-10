@@ -46,6 +46,8 @@ chain_fission <- function(X,
                                                    "geometric",
                                                    "harmonic"),
                           cl_fun,
+                          K,
+                          cl_ref,
                           parallel = FALSE,
                           ncores = NULL,
                           test,
@@ -56,38 +58,41 @@ chain_fission <- function(X,
 
   if (parallel){
     multi_fission <- pbapply::pblapply(1:nFission, function(x){
-      fission <- fission(X,
+      fission <- data_fission(X,
                          Sigma = Sigma,
-                         tau = tau,
-                         cl_fun = cl_fun,
-                         test = test,
-                         ...)
+                         tau = tau)
       return(fission)
     }, cl = ncores)
   }
 
   if (!parallel){
     multi_fission <- lapply(1:nFission, function(x){
-      fission <- fission(X,
-                         Sigma = Sigma,
-                         tau = tau,
-                         cl_fun = cl_fun,
-                         test = test,
-                         ...)
+      fission <- data_fission(X,
+                              Sigma = Sigma,
+                              tau = tau)
       return(fission)
     })
   }
-  multi_fission_p.value <- lapply(multi_fission, function(x){x$p.value})
-  multi_fission_clustering <- lapply(multi_fission, function(x){x$Cluster})
-  all_pvalue_multifission <- do.call("rbind", multi_fission_p.value)
-  if (length(merge_function) == 1){
-    pval <- merge_pvalue(all_pvalue_multifission, method = merge_function)
-  } else {
-    pval <- lapply(merge_function, function(x){merge_pvalue(all_pvalue_multifission, method = x)})
-    names(pval) <- merge_function
+  # browser()
+  multi_fission_fX <- lapply(multi_fission, function(l){l$fX})
+  multi_fission_gX <- lapply(multi_fission, function(l){l$gX})
+  multi_fission_clustering <- lapply(multi_fission_fX, cl_fun, K)
+  multi_fission_clustering_relabel <- lapply(multi_fission_clustering, function(c){
+    diceR:::relabel_class(pred.cl = c, ref.cl = cl_ref)
+  })
 
-  }
-  return(list(p.value = pval,
-              Cluster = multi_fission_clustering))
+  multi_fission_p.value <- lapply(1:nFission, function(n){
+    test(multi_fission_gX[[n]], cl = multi_fission_clustering_relabel[[n]], ...)
+  })
+
+  # browser()
+  all_pvalue_multifission <- do.call("rbind", multi_fission_p.value)
+
+  merge_pvalues <- all_pvalue_multifission %>%
+    group_by(Cluster, Variable) %>%
+    summarise(AggregateP =  DataFission:::KS_merge(pvalues))
+  return(list(p.value = merge_pvalues,
+              Cluster = multi_fission_clustering_relabel,
+              allfissions_pvals = all_pvalue_multifission))
 }
 
