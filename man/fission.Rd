@@ -4,7 +4,7 @@
 \alias{fission}
 \title{Perform post-clustering inference with data fission}
 \usage{
-fission(X, Sigma = NULL, tau = 0.4, cl_fun, K, test, ...)
+fission(X, Sigma = NULL, tau = 0.4, cl_fun, K, cl_ref = NULL, test, ...)
 }
 \arguments{
 \item{X}{The data matrix of size n x p where post-clustering inference must be applied}
@@ -17,6 +17,8 @@ fission(X, Sigma = NULL, tau = 0.4, cl_fun, K, test, ...)
 
 \item{K}{The number of clusters to build (must be an argument of the cl_fun)}
 
+\item{cl_ref}{A reference clustering that could be used to map labels obtained on $f(X)$. Default is NULL indicating no mapping}
+
 \item{test}{A test function that inputs a numeric matrix, a partition, and the two clusters to test, and outputs p-values}
 
 \item{...}{Additional arguments that can be passed to the test function}
@@ -24,8 +26,10 @@ fission(X, Sigma = NULL, tau = 0.4, cl_fun, K, test, ...)
 \value{
 A list with the following elements:
 \itemize{
-  \item \code{Cluster}: The estimated 2-clusters partition using \code{cl_fun} on f(X)
+  \item \code{Cluster}: The estimated partition using \code{cl_fun} on f(X)
   \item \code{p.value}: The p-values computed on g(X) using labels estimated on f(X)
+  \item \code{fX}: The f(X) matrix used for clustering
+  \item \code{gX}: The g(X) matrix used for inference
 }
 }
 \description{
@@ -44,6 +48,6 @@ cl <- cl_fun(X, K = 3)
 plot(fiss$fX, col = cl)
 plot(fiss$gX, col = cl)
 dev.off()
-pval <- fission(X, tau = 0.4, cl_fun = cl_fun, K=3, test = t_test.fission)
+fission_results <- fission(X, tau = 0.4, cl_fun = cl_fun, K=3, test = t_test.fission)
 
 }

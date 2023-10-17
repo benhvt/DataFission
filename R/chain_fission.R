@@ -4,12 +4,17 @@
 #' @param Sigma An estimator of the covariance matrix of size p x p of X. If NULL, sample covariance estimator is used
 #' @param tau The tuning parameter used for data fission
 #' @param nFission The number of repeated data fissions to perform
-#' @param merge_function The merging function used to derive chain fission p-values. It can be one of "KS", "Fisher", "geometric", or "harmonic"
+#' @param merge_function The merging function used to derive chain fission p-values. It can be one of "KS", "shapiro", "Fisher", "geometric", or "harmonic"
+#' @param K The number of clusters to build (must be an argument of the cl_fun)
 #' @param cl_fun A clustering function that returns a factor vector containing the clusters
+#' @param cl_ref A reference clustering that could be used to map labels obtained on $f(X)$. Default is NULL indicating that mapping is done according to the labels obtained on the first fission
 #' @param parallel A logical flag indicating whether parallel computation should be enabled
 #' @param ncores An integer indicating the number of cores to be used when parallel is TRUE
 #' @param test A test function that inputs a numeric matrix, a partition and the two clusters to test and that outputs p-values
 #' @param ... Additional arguments that can be passed to the test function
+#'
+#' @import diceR
+#' @import dplyr
 #'
 #' @return A list with the following elements:
 #' \itemize{
@@ -29,8 +34,8 @@
 #' X2 <- matrix(rnorm(200 * 50), ncol = 50)
 #' X <- cbind(X1, X2)
 #' plot(X, col = rep(1:2, each = 100))
-#' chain_fission(X, nFission = 10, cl_fun = cl_fun, test = t_test.fission)
-#' fission(X, tau = 0.4, cl_fun = cl_fun, test = t_test.fission)
+#' chain_fission(X, nFission = 10, cl_fun = cl_fun, K=2, test = t_test.fission)
+#' fission(X, tau = 0.4, cl_fun = cl_fun, K=2, test = t_test.fission)
 #'
 #' @import pbapply
 #' @importFrom stats cov
@@ -47,7 +52,7 @@ chain_fission <- function(X,
                                                    "harmonic"),
                           cl_fun,
                           K,
-                          cl_ref,
+                          cl_ref = NULL,
                           parallel = FALSE,
                           ncores = NULL,
                           test,
@@ -73,25 +78,60 @@ chain_fission <- function(X,
       return(fission)
     })
   }
-  # browser()
   multi_fission_fX <- lapply(multi_fission, function(l){l$fX})
   multi_fission_gX <- lapply(multi_fission, function(l){l$gX})
-  multi_fission_clustering <- lapply(multi_fission_fX, cl_fun, K)
-  multi_fission_clustering_relabel <- lapply(multi_fission_clustering, function(c){
-    diceR:::relabel_class(pred.cl = c, ref.cl = cl_ref)
-  })
 
-  multi_fission_p.value <- lapply(1:nFission, function(n){
-    test(multi_fission_gX[[n]], cl = multi_fission_clustering_relabel[[n]], ...)
-  })
+  if (parallel){
+    multi_fission_clustering <- pblapply(multi_fission_fX,
+                                         cl_fun,
+                                         K,
+                                         cl = ncores)
+  }
+  if (!parallel){
+    multi_fission_clustering <- lapply(multi_fission_fX,
+                                       cl_fun,
+                                       K)
+  }
+
 
   # browser()
+
+  if (is.null(cl_ref)){
+    cl_ref <- multi_fission_clustering[[1]]
+  }
+
+  multi_fission_clustering_relabel <- lapply(multi_fission_clustering, function(c){
+    diceR::relabel_class(pred.cl = c, ref.cl = cl_ref)
+  })
+
+  if (parallel){
+    multi_fission_p.value <- pblapply(1:nFission, function(n){
+      test(multi_fission_gX[[n]], cl = multi_fission_clustering_relabel[[n]], ...)
+    }, cl = ncores)
+  }
+
+  if(!parallel){
+    multi_fission_p.value <- lapply(1:nFission, function(n){
+      test(multi_fission_gX[[n]], cl = multi_fission_clustering_relabel[[n]], ...)
+    })
+  }
+
   all_pvalue_multifission <- do.call("rbind", multi_fission_p.value)
 
-  merge_pvalues <- all_pvalue_multifission %>%
-    group_by(Cluster, Variable) %>%
-    summarise(AggregateP =  DataFission:::KS_merge(pvalues))
-  return(list(p.value = merge_pvalues,
+    if (length(merge_function)==1){
+    aggregate_pvalues <- all_pvalue_multifission %>%
+      group_by(.data$Cluster, .data$Variable) %>%
+      summarise(AggregateP = merge_pvalue(.data$pvalues, method = merge_function)) %>%
+      mutate(MergingFunction = merge_function)
+  }
+  else{
+    aggregate_pvalues <- all_pvalue_multifission %>%
+      group_by(.data$Cluster, .data$Variable) %>%
+      reframe(AggregateP = sapply(merge_function, function(m){merge_pvalue(.data$pvalues, method = m)})) %>%
+      mutate(MergingFunction = rep(merge_function, ncol(X)*length(table(all_pvalue_multifission$Cluster))))
+  }
+
+  return(list(p.value = aggregate_pvalues,
               Cluster = multi_fission_clustering_relabel,
               allfissions_pvals = all_pvalue_multifission))
 }

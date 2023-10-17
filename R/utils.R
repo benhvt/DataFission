@@ -20,14 +20,23 @@ harmonic_merge <- function(p){
   return(min((exp(1)*log(K))*(K/(sum(1/p))),1))
 }
 
-merge_pvalue <- function(chain_fission, method = c("KS", "Fisher", "harmonic", "geometric")){
+box_muller <- function(p){
+  U <- stats::runif(length(p))
+  Z <- sqrt(-2*log(U))* cos(2*pi*p)
+  return(stats::shapiro.test(Z)$p.value)
+}
+
+
+merge_pvalue <- function(chain_fission, method = c("KS", "shapiro", "Fisher", "harmonic", "geometric")){
   if (method == "KS")
-    pval_chain <- apply(chain_fission, 2, KS_merge)
+    pval_chain <- KS_merge(chain_fission)
+  if (method == "shapiro")
+    pval_chain <- box_muller(chain_fission)
   if (method == "Fisher")
-    pval_chain <- apply(chain_fission, 2, Fisher_merge)
+    pval_chain <- Fisher_merge(chain_fission)
   if (method == "geometric")
-    pval_chain <- apply(chain_fission, 2, geometric_merge)
+    pval_chain <- geometric_merge(chain_fission)
   if (method == "harmonic")
-    pval_chain <- apply(chain_fission, 2, harmonic_merge)
+    pval_chain <- harmonic_merge(chain_fission)
   return(pval_chain)
 }

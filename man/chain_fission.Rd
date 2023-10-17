@@ -11,6 +11,8 @@ chain_fission(
   nFission = 1000,
   merge_function = c("KS", "Fisher", "geometric", "harmonic"),
   cl_fun,
+  K,
+  cl_ref = NULL,
   parallel = FALSE,
   ncores = NULL,
   test,
@@ -26,9 +28,13 @@ chain_fission(
 
 \item{nFission}{The number of repeated data fissions to perform}
 
-\item{merge_function}{The merging function used to derive chain fission p-values. It can be one of "KS", "Fisher", "geometric", or "harmonic"}
+\item{merge_function}{The merging function used to derive chain fission p-values. It can be one of "KS", "shapiro", "Fisher", "geometric", or "harmonic"}
 
 \item{cl_fun}{A clustering function that returns a factor vector containing the clusters}
+
+\item{K}{The number of clusters to build (must be an argument of the cl_fun)}
+
+\item{cl_ref}{A reference clustering that could be used to map labels obtained on $f(X)$. Default is NULL indicating that mapping is done according to the labels obtained on the first fission}
 
 \item{parallel}{A logical flag indicating whether parallel computation should be enabled}
 
@@ -60,7 +66,7 @@ X1 <- rbind(X1_cl1, X1_cl2)
 X2 <- matrix(rnorm(200 * 50), ncol = 50)
 X <- cbind(X1, X2)
 plot(X, col = rep(1:2, each = 100))
-chain_fission(X, nFission = 10, cl_fun = cl_fun, test = t_test.fission)
-fission(X, tau = 0.4, cl_fun = cl_fun, test = t_test.fission)
+chain_fission(X, nFission = 10, cl_fun = cl_fun, K=2, test = t_test.fission)
+fission(X, tau = 0.4, cl_fun = cl_fun, K=2, test = t_test.fission)
 
 }

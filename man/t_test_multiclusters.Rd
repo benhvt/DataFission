@@ -21,7 +21,7 @@ Performs t-test for K >= 2 clusters
 }
 \examples{
 n <- 150
-cl <- sample(1:5, size = n, replace = T)
+cl <- sample(1:5, size = n, replace = TRUE)
 x <- rnorm(n)
 t_test_multiclusters(x, cl)
 }
